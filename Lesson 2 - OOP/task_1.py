@@ -9,23 +9,22 @@ class Animal1(Animal):
 Some of the animal with 1-2 extra methods related to this animal
 """
 
-
 class Animal:
     def __init__(self, name):
         self.name = name
 
     def eat(self):
-        print(f"{self.name} is eating")
+        print(f"{self.name} is eating as animal")
 
     def sleep(self):
-        print(f"{self.name} is sleeping")
+        print(f"{self.name} is sleeping as animal")
 
 
 class Cat(Animal):
     def meaw(self):
         print(f"{self.name} is meawing")
 
-    def catch_mouse(self) :
+    def catch_mouse(self):
         print(f"{self.name} catching a mouse")
 
 
@@ -48,8 +47,39 @@ class Snake(Animal):
     def crawling(self):
         print(f"{self.name} is crawling")
 
+class Human:
+    def __init__(self, name):
+        self.name = name
 
-if __name__ == "__main__" :
+    def eat(self):
+        print(f"{self.name} is eating as human")
+
+    def sleep(self):
+        print(f"{self.name} is sleeping as human")
+
+    def studying(self):
+        print(f"{self.name} is studying as human")
+
+    def work(self):
+        print(f"{self.name} is working as human")
+
+
+class Centaur(Human, Animal):
+    def __init__(self, name):
+        super().__init__(name)
+        Animal.__init__(self, name)
+
+    def eat_as_centaur(self):
+        print(f"{self.name} is eating as centaur")
+
+    def eat_as_human(self):
+        super().eat()
+
+    def eat_as_animal(self):
+        Animal.eat(self)
+
+
+if __name__ == "__main__":
     cat = Cat("Vasia")
     dog = Dog("Patron")
     parrot = Parrot("Grisha")
@@ -68,3 +98,11 @@ if __name__ == "__main__" :
     print(f"Check if {parrot.name} is instance of Animal: {isinstance(parrot, Animal)}")
     print(f"Check if {monkey.name} is instance of Animal: {isinstance(monkey, Animal)}")
     print(f"Check if {snake.name} is instance of Animal: {isinstance(snake, Animal)}")
+
+    """ 1a """
+    centaur = Centaur("Vasia")
+
+    centaur.eat_as_centaur()
+    centaur.eat_as_animal()
+    centaur.eat_as_human()
+    """ """

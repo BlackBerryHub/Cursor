@@ -1,58 +1,25 @@
 """
-1.a. Create a new class Human and use multiple inheritance to create Centaur class, create an instance of Centaur class and call the common method of these classes and unique.
-
-class Human:
-    Human class, should have eat, sleep, study, work
-
-class Centaur(.. , ..):
-    Centaur class should be inherited from Human and Animal and has unique method related to it.
+Create regular class taking 8 params on init - name, last_name, phone_number,
+address, email, birthday, age, sex
+Override a printable string representation of Profile class and return:
+list of the params mentioned above
 """
 
-class Human:
-    def __init__(self, name):
+
+class Profile:
+    def __init__(self, name, last_name, phone_number, address, email, birthday, age, sex) :
         self.name = name
+        self.last_name = last_name
+        self.phone_number = phone_number
+        self.address = address
+        self.email = email
+        self.birthday = birthday
+        self.age = age
+        self.sex = sex
 
-    def eat(self):
-        print(f"{self.name} is eating as human")
+    def __str__(self):
+        return f"{self.name}, {self.last_name}, {self.phone_number}, {self.address}, {self.email}, " \
+               f"{self.birthday}, {self.age}, {self.sex}"
 
-    def sleep(self):
-        print(f"{self.name} is sleeping as human")
-
-    def studying(self):
-        print(f"{self.name} is studying as human")
-
-    def work(self):
-        print(f"{self.name} is working as human")
-
-
-class Animal:
-    def __init__(self, name):
-        self.name = name
-
-    def eat(self):
-        print(f"{self.name} is eating as animal")
-
-    def sleep(self):
-        print(f"{self.name} is sleeping as animal")
-
-
-class Centaur(Human, Animal):
-    def __init__(self, name):
-        super().__init__(name)
-        Animal.__init__(self, name)
-
-    def eat_as_centaur(self):
-        print(f"{self.name} is eating as centaur")
-
-    def eat_as_human(self):
-        super().eat()
-
-    def eat_as_animal(self):
-        Animal.eat(self)
-
-
-centaur = Centaur("Vasia")
-
-centaur.eat_as_centaur()
-centaur.eat_as_animal()
-centaur.eat_as_human()
+profile = Profile("Marat", "Khusnutdinov", "0663549312", "Lviv, Lukasha 4", "blackberry4800@gmail.com", "25.01.2000", "23", "Male")
+print(profile)
