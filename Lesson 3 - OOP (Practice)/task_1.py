@@ -44,7 +44,6 @@ class House:
         self.cost *= 1 - discount
 
 class Realtor(metaclass=SingletonMeta):
-
     def __init__(self, name, houses, discount):
         self.name = name
         self.houses = houses
