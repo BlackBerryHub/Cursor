@@ -18,8 +18,10 @@ class Profile:
         self.sex = sex
 
     def __str__(self):
-        return f"{self.name}, {self.last_name}, {self.phone_number}, {self.address}, {self.email}, " \
-               f"{self.birthday}, {self.age}, {self.sex}"
+        # keys() for params, values() for values in this params, items() for tuples
+        return str(list(self.__dict__.items()))
 
-profile = Profile("Marat", "Khusnutdinov", "0663549312", "Lviv, Lukasha 4", "blackberry4800@gmail.com", "25.01.2000", "23", "Male")
+
+profile = Profile("Marat", "Khusnutdinov", "0663549312", "Lviv, Lukasha 4", "blackberry4800@gmail.com", "25.01.2000",
+                  "23", "Male")
 print(profile)
