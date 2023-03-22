@@ -19,7 +19,7 @@ class Profile:
 
     def __str__(self):
         # keys() for params, values() for values in this params, items() for tuples
-        return str(list(self.__dict__.items()))
+        return str(list(self.__dict__.keys()))
 
 
 profile = Profile("Marat", "Khusnutdinov", "0663549312", "Lviv, Lukasha 4", "blackberry4800@gmail.com", "25.01.2000",
