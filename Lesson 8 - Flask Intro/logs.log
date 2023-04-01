@@ -1,0 +1,16 @@
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 358-937-373
+INFO:werkzeug:127.0.0.1 - - [01/Apr/2023 23:55:12] "GET /datetime HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [01/Apr/2023 23:55:14] "GET /datetime HTTP/1.1" 200 -
+INFO:dateapp:Provided parameter: None
+INFO:werkzeug:127.0.0.1 - - [01/Apr/2023 23:55:20] "GET /datetime/ HTTP/1.1" 200 -
+INFO:dateapp:Provided parameter: +3
+INFO:werkzeug:127.0.0.1 - - [01/Apr/2023 23:55:24] "GET /datetime/+3 HTTP/1.1" 200 -
+INFO:dateapp:Provided parameter: +3
+INFO:werkzeug:127.0.0.1 - - [01/Apr/2023 23:55:25] "GET /datetime/+3 HTTP/1.1" 200 -
+INFO:dateapp:Provided parameter: 0
+INFO:werkzeug:127.0.0.1 - - [01/Apr/2023 23:55:30] "GET /datetime/0 HTTP/1.1" 200 -
