@@ -37,10 +37,9 @@ def memory():
 #       and use template inheritance
 @app.route('/memory-client')
 def memory_client():
-    ...
-    # add logic here
-    ...
-    return render_template('memory-client.html')
+    mem = methods['virtual_memory'](format=None)
+    app.logger.debug('Got memory data:\n\t %r', mem)
+    return render_template('memory-client.html', mem=mem)
 
 
 
