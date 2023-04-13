@@ -27,14 +27,7 @@ def memory():
                            mem=mem
                            )
 
-# TODO: add a template rendering route where progressbar gets filled
-#       on client-side, with requests done using js fetch() method.
-#       Some basics can be filled on server-side though, like page title
-# TODO(extra): try to modify js:
-#       - to make server return server-side rendered page
-#       - with js dynamically updating its data
-# TODO(extra): try extracting common template values into jinja block in separate file
-#       and use template inheritance
+
 @app.route('/memory-client')
 def memory_client():
     mem = methods['virtual_memory'](format=None)
