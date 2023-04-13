@@ -38,7 +38,6 @@ formatters = {
     'repr': ('text', repr)
 }
 
-
 def method_api(method, format='json', *args):
     """Call method, parse result and format it accordingly."""
     # TODO: add args handling
