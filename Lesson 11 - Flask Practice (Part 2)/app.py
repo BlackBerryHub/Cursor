@@ -1,22 +1,22 @@
+import hashlib
+import os
+import uuid
+
 import catday
 import utils
-from flask import Flask, Response, abort, send_file
-import PIL.Image
+from flask import Flask, Response, abort, send_file, render_template, request
+from PIL import Image, ImageFile
 import io
 import logging
 import random
 
 from time import perf_counter
 
-app = Flask(__name__)
+# set maximum block size to 10 megabytes
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+ImageFile.MAX_BLOCK_SIZE = 10485760
 
-@app.route('/')
-def hello_world():
-    # TODO: use proper template instead of the following
-    ret = r'Try <a href="/cats/catoftheday.jpg">Cat of the Day</a>'
-    ret += r'<br><img src="/cats/catoftheday.jpg" alt="catoftheday"'
-    ret += r' style="max-height: 90vh; margin: auto; display: flex"></img>'
-    return Response(ret, mimetype='text/html')
+app = Flask(__name__)
 
 
 # Note:
@@ -27,10 +27,24 @@ def hello_world():
 #   the page with a trailing slash, a 404 not found is raised.
 # So we try to always define rules with trailing slashes '/'
 
-@app.route('/cats/')
-def list_cats():
-    msg = 'There are {num} cats in our collection'
-    return msg.format(num=len(catday.CATS))
+@app.route('/', methods=["GET", "POST"])
+def customtext():
+    first_name = ''
+    if request.method == "POST":
+        first_name = request.form.get("fname")
+        num = request.form.get("num")
+        src = f"catoftheday?num={num}&fname={first_name}"
+        cat_of_the_day = f'<img id="cat-image" src="{src}" alt="cat of the day">'
+
+    gallery_html = ''
+    for image in range(len(catday.CATS)):
+        gallery_html += f'<button class="img-choose" type="submit" form="form1" name="num" value="{image}"'\
+                        f'method="POST"><img src="/cats/cat{image}.png" alt="cat"></button>'
+
+    if request.method == "GET":
+        cat_of_the_day = f'<img id="cat-image" src="/catoftheday.jpg" alt="cat of the day">'
+
+    return render_template("catoftheday.html", gallery=gallery_html, cat_of_the_day=cat_of_the_day)
 
 
 def get_cat(numext, try_random=False):
@@ -40,9 +54,7 @@ def get_cat(numext, try_random=False):
     except ValueError:      # integer unconvertable or wrong range
         abort(404, 'Wrong image number')
     else:
-        app.logger.debug('Retrieve image "%s" for '
-                        'base %s with ext "%s"',
-                        *ret)
+        app.logger.debug('Retrieve image "%s" for base %s with ext "%s"', *ret)
         return ret
 
 
@@ -60,7 +72,7 @@ def cat_original(num, ext):
     if ext.lower() != file.suffix.lower():
         
         try:
-            img = PIL.Image.open(file)
+            img = Image.open(file)
             # Save to buffer in memory and serve with Flask
             buf = utils.ImageIO(img, ext=ext)
         except utils.ImageIOError as err:
@@ -80,18 +92,9 @@ def cat_original(num, ext):
 
     return send_file(file, as_attachment=False, download_name=name)
 
-
-@app.route('/cats/catoftheday<name>')
-def cat_modified(name):
-    file, base, ext = get_cat(name, try_random=True)
-
-    date = utils.DateTriple()       # try UADateTriple() here
-    date_suffix = date.tostr(fmt='{day}_{month:.3}').lower()
-
-    text = date.tostr(fmt='{weekday:.3},\n{day}\n{month:.3}')
-
+def process_image(file, text, ext):
     try:
-        img = PIL.Image.open(file)
+        img = Image.open(file)
         bgcolor = (255, 255, 255, int(255 * 0.4))
         cut = catday.cutter.text_cutout(img, text, bgcolor=bgcolor)
         if ext in ['.jpg', '.jpeg', '.jfif']:
@@ -100,12 +103,63 @@ def cat_modified(name):
         file = utils.ImageIO(cut, ext=ext)
     except utils.ImageIOError as err:
         abort(400, str(err))
+    return file
+
+@app.route('/catoftheday', methods=["GET"])
+def cat_text():
+    if request.method == "GET":
+        first_name = request.args.get("fname")
+        num = request.args.get("num")
+
+        file, base, ext = get_cat(f"{num}.png", try_random=True)
+        date = utils.DateTriple()  # try UADateTriple() here
+        date_suffix = date.tostr(fmt='{day}_{month:.3}').lower()
+
+        if not first_name:
+            text = date.tostr(fmt='{weekday:.3},\n{day}\n{month:.3}')
+        else:
+            text = first_name
+
+        file = process_image(file, text, ext)
+
+        return send_file(file, as_attachment=False, download_name=first_name)
+
+
+@app.route('/catoftheday<name>')
+def cat_date(name):
+
+    file, base, ext = get_cat(name, try_random=True)
+
+    date = utils.DateTriple()       # try UADateTriple() here
+    date_suffix = date.tostr(fmt='{day}_{month:.3}').lower()
+    text = date.tostr(fmt='{weekday:.3},\n{day}\n{month:.3}')
+    file = process_image(file, text, ext)
 
     # passed to browser
     name = f'catoftheday{base}-{date_suffix}{ext}'
     return send_file(file, as_attachment=False, download_name=name)
 
-    
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        file = request.files['file']
+        hashsum = hashlib.md5(file.read()).hexdigest()
+
+        # check for decompression bomb before saving file
+        try:
+            with Image.open(file.stream) as img:
+                pass
+        except:
+            return 'File is a decompression bomb!'
+
+        if not catday.check_duplicate(hashsum):
+            filename = str(uuid.uuid4()) + '.jpg'  # Set a unique filename
+            file.stream.seek(0)
+            file.save(os.path.join(app.root_path, 'static/uploaded/') + filename)
+            return 'File uploaded successfully!'
+        else:
+            return 'File already exists!'
 
 
 if __name__ == '__main__':

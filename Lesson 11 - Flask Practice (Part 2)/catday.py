@@ -1,3 +1,4 @@
+import hashlib
 import logging
 # Setup logging ASAP, as we want all
 # messages to appear in log when this file is
@@ -12,7 +13,7 @@ import random
 
 # Directory containing cat images,
 # relative to project directory
-CATDIR = './cats'
+CATDIR = './static/cats'
 
 # The logger we use
 log = logging.getLogger(__name__)
@@ -38,6 +39,15 @@ if log.isEnabledFor(logging.INFO):
     log.info('Collected %s cat images:\n\t%s',
               len(CATS), '\n\t'.join(CATS))
 
+
+def check_duplicate(hashsum):
+    for cat in CATS:
+        try:
+            if hashlib.md5(cat.read_bytes()).hexdigest() == hashsum:
+                return True
+        except:
+            continue
+    return False
 
 def find_cat_file(numext, try_random=False):
     p = pth.Path(numext)
