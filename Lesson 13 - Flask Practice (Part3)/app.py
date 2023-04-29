@@ -15,8 +15,9 @@ db.init_app(app)
 
 # Limit maximum incoming length to 16 MiB
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+MAX_FILE_SIZE = 16 * 1024 * 1024  # 16MB
 # This is our own controller
-storage = Storage(directory='uploads', db=db, model=models.File)
+storage = Storage(directory='uploads', db=db, model=models.File, MAX_FILE_SIZE=MAX_FILE_SIZE)
 storage.init_app(app)
 
 # Add all catday routes
