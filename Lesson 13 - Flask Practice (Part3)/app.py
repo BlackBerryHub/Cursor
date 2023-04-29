@@ -23,6 +23,7 @@ storage.init_app(app)
 app.register_blueprint(catday.cats_bp, url_prefix='/cats')
 # a hack to make app logger accessible
 catday.cats_bp.logger = app.logger
+catday.cats_bp.storage = storage
 
 
 @app.route('/')

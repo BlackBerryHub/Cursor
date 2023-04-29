@@ -68,6 +68,16 @@ class File(db.Model):
             raise LookupError
         return found
 
+    @classmethod
+    def get_all_ids(cls):
+        files = db.session.query(cls.id).all()
+        file_ids = [file.id for file in files]
+
+        if len(file_ids) == 0:
+            raise LookupError
+
+        return file_ids
+
 
 
 if __name__ == '__main__':

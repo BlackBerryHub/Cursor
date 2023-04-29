@@ -50,7 +50,8 @@ def find_cat_file(numext, try_random=False):
     # num specifies the cat image to use
     # if num is omitted, and try_random is True, random cat should appear
     if try_random is True and not base:
-        num = random.randint(0, len(CATS) - 1)
+        #num = random.randint(0, len(CATS) - 1)
+        num = random.choice(cats_bp.storage.get_all_ids())
     else:
         num = int(base)      # try integer conversion
     

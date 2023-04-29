@@ -18,7 +18,7 @@ class StorageError(Exception):
 class FileExistsError(StorageError):
     def __init__(self, id=None):
         self.id = id
-    
+
     def __str__(self):
         msg = 'File already exists'
         if self.id is not None:
@@ -40,7 +40,7 @@ class Storage:
     def init_app(self, app):
         """Bind storage to app to make it accessible as app.storage."""
         app.storage = self
-    
+
     def load(self, filename_or_id, **kwargs):
         if isinstance(filename_or_id, int):
             # assuming id is passed
@@ -61,11 +61,11 @@ class Storage:
         if isinstance(val, io.BufferedIOBase):
             return self.has_file(val)
         return self.has_name(val)
-    
+
     def has_name(self, filename):
         res = self._Model.get_by_filename(filename)
         return res is not None
-          
+
     def has_file(self, iobuf, *, fastcheck=False, hash=None):
         ret = self.get_filenames(
             iobuf=iobuf, fastcheck=fastcheck, hash=hash)
@@ -81,7 +81,7 @@ class Storage:
 
         # try finding existing files with the same hash
         samehash = self._Model.find_by_hash(hash)
- 
+
         if samehash and fastcheck:
             return tuple(samehash)
 
@@ -92,7 +92,7 @@ class Storage:
                 issame = upload.compare_buffers(f, iobuf)
             if issame:
                 return (item, )
-        
+
         return tuple()
 
     def store(self,
@@ -155,8 +155,11 @@ class Storage:
             self.db.session.commit()
 
         return dbfile
-    
+
     def _lookup_filename(self, filename):
         """Ensure file always resides under directory"""
         pth = self.dir.joinpath(pth.Path(filename).name)
         return str(pth)
+
+    def get_all_ids(self):
+        return self._Model.get_all_ids()
