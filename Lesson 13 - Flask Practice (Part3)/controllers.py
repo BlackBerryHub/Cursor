@@ -5,6 +5,7 @@ Controllers serve as a middleware between Model and View
 
 import models
 from utils import upload
+from werkzeug.exceptions import RequestEntityTooLarge
 import datetime as dt
 import pathlib as pth
 
@@ -28,12 +29,13 @@ class FileExistsError(StorageError):
 
 class Storage:
     """Provides interface to files based on File model."""
-    __slots__ = 'dir', 'db', '_Model'
+    __slots__ = 'dir', 'db', '_Model', 'MAX_FILE_SIZE'
 
-    def __init__(self, directory, db, model):
+    def __init__(self, directory, db, model, MAX_FILE_SIZE):
         self.dir = pth.Path(directory)
         self.db = db
         self._Model = model
+        self.MAX_FILE_SIZE = MAX_FILE_SIZE
         # ensure directory exists
         self.dir.mkdir(exist_ok=True)
 
@@ -51,7 +53,7 @@ class Storage:
             filename = filename_or_id
         filename = self._lookup_filename(filename)
         file = open(file=filename, mode='rb', **kwargs)
-        return file
+        return file, filename
 
     def __getitem__(self, filename_or_id):
         """Alias to load() method with default arguments"""
@@ -121,6 +123,11 @@ class Storage:
         if uploaded_at is None:
             uploaded_at = dt.datetime.now()
 
+        if len(iobuf.read()) > self.MAX_FILE_SIZE:
+            raise RequestEntityTooLarge('File size exceeds the maximum file size limit')
+
+        iobuf.seek(0)
+
         hash = self._Model.compute_hash(iobuf)
 
         # try finding existing files with the same hash
@@ -158,8 +165,8 @@ class Storage:
 
     def _lookup_filename(self, filename):
         """Ensure file always resides under directory"""
-        pth = self.dir.joinpath(pth.Path(filename).name)
-        return str(pth)
+        path = self.dir.joinpath(pth.Path(filename).name)
+        return str(path)
 
     def get_all_ids(self):
         return self._Model.get_all_ids()

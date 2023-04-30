@@ -57,8 +57,9 @@ def find_cat_file(numext, try_random=False):
     
     if num < 0 or num > len(CATS) - 1:
         raise ValueError
-    
-    return CATS[num], base, ext
+
+    file, filename = cats_bp.storage.load(filename_or_id=num)
+    return file, filename, base, ext
 
 
 def get_cat(numext, try_random=False):
@@ -68,7 +69,7 @@ def get_cat(numext, try_random=False):
     except ValueError:      # integer unconvertable or wrong range
         abort(404, 'Wrong image number')
     else:
-        cats_bp.logger.debug('Retrieve image "%s" for '
+        cats_bp.logger.debug('Retrieve image "%s" (image_name: "%s") for '
                         'base %s with ext "%s"',
                         *ret)
         return ret
@@ -97,7 +98,7 @@ def list_cats():
 def cat_original(num, ext):
     t_start = perf_counter()    # measure request time
 
-    file, base, ext = get_cat(f'{num}.{ext}', try_random=False)
+    file, filename, base, ext = get_cat(f'{num}.{ext}', try_random=False)
 
     name = f'cat{base}{ext}'   # the filename passed to browser
     
@@ -130,7 +131,7 @@ def cat_original(num, ext):
 
 @cats_bp.route('/catoftheday<name>')
 def cat_modified(name):
-    file, base, ext = get_cat(name, try_random=True)
+    file, filename, base, ext = get_cat(name, try_random=True)
 
     date = utils.DateTriple()       # try UADateTriple() here
     date_suffix = date.tostr(fmt='{day}_{month:.3}').lower()
