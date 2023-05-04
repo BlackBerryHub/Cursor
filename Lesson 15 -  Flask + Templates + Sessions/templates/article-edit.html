@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form action="/article/{{ article.id }}/edit" method="POST">
+        <div class="mb-3">
+            <label for="title" class="form-label">Title:</label>
+            <input type="text" class="form-control" name="title" aria-describedby="title" value="{{ article.title }}">
+        </div>
+        <div class="mb-3">
+            <label for="body" class="form-label">Description:</label>
+            <input type="text" class="form-control" name="body" aria-describedby="body" value="{{ article.body }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Update</button>
+    </form>
+{% endblock %}

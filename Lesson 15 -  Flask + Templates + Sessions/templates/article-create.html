@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form action="/save-article" method="POST">
+        <div class="mb-3">
+            <label for="title" class="form-label">Title:</label>
+            <input type="text" class="form-control" name="title" aria-describedby="title">
+        </div>
+        <div class="mb-3">
+            <label for="body" class="form-label">Description:</label>
+            <input type="text" class="form-control" name="body" aria-describedby="body">
+        </div>
+        <button type="submit" class="btn btn-primary">Create</button>
+    </form>
+{% endblock %}

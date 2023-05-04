@@ -1,12 +1,69 @@
 import hashlib
 from app import app, db
-from flask import render_template, request, redirect, session
-from models import User
+from flask import render_template, request, redirect, session, abort
+from models import User, Articles
 
 
 @app.route("/")
-def hello_world():
-    return render_template("index.html")
+def articles():
+    articles = Articles.query.all()
+    return render_template("index.html", articles=articles)
+
+@app.route("/article/<int:article_id>/edit", methods=["GET", "POST"])
+def article_edit(article_id):
+    if session.get("user"):
+        article = Articles.query.get_or_404(article_id)
+
+        if article.user_id != session["user"]["id"]:
+            abort(403)
+
+        if request.method == "GET":
+            return render_template("article-edit.html", article=article)
+
+        if request.method == "POST":
+            article.title = request.form["title"]
+            article.body = request.form["body"]
+
+            db.session.commit()
+
+        return redirect("/")
+
+    else:
+        return render_template("sign-in.html")
+
+
+@app.route("/article/<int:article_id>/delete", methods=["POST"])
+def article_delete(article_id):
+    if session.get("user"):
+        article = Articles.query.get_or_404(article_id)
+
+        if article.user_id != session["user"]["id"]:
+            abort(403)
+
+        if request.method == "POST":
+            db.session.delete(article)
+            db.session.commit()
+
+        return redirect("/")
+
+    else:
+        return render_template("sign-in.html")
+
+@app.route("/article/create")
+def article_create():
+    if session.get("user"):
+        return render_template('article-create.html')
+    else:
+        return render_template("sign-in.html")
+
+
+@app.route("/save-article", methods=["POST"])
+def save_article():
+    data = request.form
+    article = Articles(title=data.get('title'), body=data.get("body"), user_id=session.get('user').get("id"))
+    db.session.add(article)
+    db.session.commit()
+    return redirect("/")
 
 
 @app.route("/sign-up")
