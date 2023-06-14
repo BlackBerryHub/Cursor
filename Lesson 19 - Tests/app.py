@@ -8,12 +8,13 @@ app = Flask(__name__)
 api = Api(app)
 db = SQLAlchemy()
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:1111@db:3306/blog"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = "very_very_secret_key"
 db.init_app(app)
 
 with app.app_context():
     from routes import *
-    from models import User
+    from models import *
 
     migrate = Migrate(app, db)
 
