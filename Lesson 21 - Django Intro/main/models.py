@@ -13,7 +13,6 @@ class MenuItem(models.Model):
 
 class SliderItem(models.Model):
     title = models.CharField(max_length=255)
-    link = models.CharField(max_length=255, editable=False)
     image = models.ImageField(upload_to="uploads/")
 
 
@@ -25,8 +24,7 @@ class SliderItem(models.Model):
         hash_object = hashlib.sha256(self.image.url.encode())
         link_hash = hash_object.hexdigest()
 
-        # Assign the hash as the link
-        self.link = link_hash
+        # Assign the hash as the image name
         self.image.name = f"{link_hash}.jpg"
 
         super().save(*args, **kwargs)
