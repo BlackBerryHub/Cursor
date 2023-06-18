@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container">
+        <h1 class="text-center mb-5">Product Detail</h1>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="product">
+                    <div class="product__images">
+                        <img
+                                src="{{ product.images.0.image.url }}"
+                                alt="Product Image"
+                                class="product__main-image"
+                                id="main-image"
+                        />
+                        <div class="product__slider-wrap">
+                            <div class="product__slider">
+                                {% for image in product.images %}
+                                    <img
+                                            src="{{ image.image.url }}"
+                                            alt="Product Image"
+                                            class="product__image product__image--active"
+                                    />
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h2>{{ product.title }}</h2>
+                <p>{{ product.description }}</p>
+                <p>Price: {{ product.price }}₴</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const mainImage = document.getElementById("main-image");
+        const images = document.querySelectorAll(".product__image");
+
+        images.forEach((image) => {
+            image.addEventListener("click", (event) => {
+                mainImage.src = event.target.src;
+
+                document
+                    .querySelector(".product__image--active")
+                    .classList.remove("product__image--active");
+
+                event.target.classList.add("product__image--active");
+            });
+        });
+    </script>
+{% endblock %}

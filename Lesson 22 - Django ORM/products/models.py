@@ -15,6 +15,10 @@ class Product(models.Model):
     def main_image(self):
         return ProductImage.objects.filter(Q(product_id=self.id) & Q(is_main=True)).first().image
 
+    @property
+    def images(self):
+        return ProductImage.objects.filter(product_id=self.id)
+
     def __str__(self):
         return str(self.id) + " " + self.title
 
