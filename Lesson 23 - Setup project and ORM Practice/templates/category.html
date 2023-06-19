@@ -1,5 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
+    <form action="{% url 'category_page' slug=category.slug %}" method="GET" class="form-inline">
+        <div class="form-group">
+            <label for="sort">Sort by:</label>
+            <button type="submit" name="sort" value="price" class="btn btn-primary">Price</button>
+            <button type="submit" name="sort" value="date" class="btn btn-primary">Date</button>
+        </div>
+    </form>
     <div class="container">
         <h1 class="text-center">{{ category.title }}</h1>
         <div class="products-list">
@@ -7,7 +14,5 @@
                 {% include "elements/card.html" %}
             {% endfor %}
         </div>
-
     </div>
-
 {% endblock %}

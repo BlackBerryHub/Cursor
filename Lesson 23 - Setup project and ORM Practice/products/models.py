@@ -10,7 +10,7 @@ class Product(models.Model):
     discount_price = models.IntegerField(null=True, blank=True)
     show_on_main_page = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-
+    date_added = models.DateTimeField(auto_now_add=True)
     @property
     def main_image(self):
         return ProductImage.objects.filter(Q(product_id=self.id) & Q(is_main=True)).first().image
