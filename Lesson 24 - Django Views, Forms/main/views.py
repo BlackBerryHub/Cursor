@@ -1,8 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
-from .models import Order, OrderItems
+from datetime import datetime
+from django.views.decorators.http import require_POST
+
+from .models import Order, OrderItems, Coupon
 from .forms import NewUserForm
 from products.models import Product
 
@@ -32,12 +35,38 @@ def add_to_cart(request, product_id: int):
 
 def cart(request):
     cart_products = []
+    coupon = []
+    coupon_id = request.session.get("coupon_id", None)
+
+    if coupon_id:
+        coupon = Coupon.objects.get(id=coupon_id)
+
     for cart_item in request.session.get("cart", []):
         product = Product.objects.get(id=cart_item["id"])
         product.quantity = cart_item["quantity"]
         product.total_price = cart_item["price"]
+        if coupon:
+            product.coupon_applied = True
+            product.total_price = cart_item["price"]
+            product.total_price_with_discount = product.total_price * ((100 - coupon.discount)/100)
+            cart_item["price_with_discount"] = product.total_price_with_discount
+            request.session.modified = True
         cart_products.append(product)
+
     return render(request, "cart.html", {"cart_products": cart_products})
+
+
+@require_POST
+def apply_discount(request):
+    code = request.POST.get('code')
+    try:
+        coupon = Coupon.objects.get(code__iexact=code, valid_from__lte=datetime.now().isoformat(), valid_to__gte=datetime.now().isoformat(), active=True)
+        request.session['coupon_id'] = coupon.id
+
+    except Coupon.DoesNotExist:
+        request.session['coupon_id'] = None
+
+    return redirect("/cart")
 
 
 def checkout(request):
@@ -69,6 +98,7 @@ def checkout_proceed(request):
             order_item.product_id = item["id"]
             order_item.order_id = order.id
             order_item.price = item["price"]
+            order_item.price_with_discount = item["price_with_discount"]
             order_item.quantity = item["quantity"]
             order_item.save()
     return HttpResponseRedirect("/")

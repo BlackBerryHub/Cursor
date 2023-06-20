@@ -24,9 +24,18 @@
                     <i class="fas fa-plus"></i>
                 </button>
             </div>
-            <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
-                <h5 class="mb-0">${{ product.total_price }}</h5>
-            </div>
+            {% if product.coupon_applied %}
+                <div class="col-md-3 col-lg-2 col-xl-2 d-flex">
+                    <h5 class="mb-0"><del>${{ product.total_price }}</del></h5>
+                </div>
+                <div class="col-md-3 col-lg-2 col-xl-2 d-flex">
+                    <h5 class="mb-0">${{ product.total_price_with_discount }}</h5>
+                </div>
+            {% else %}
+                <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+                    <h5 class="mb-0">${{ product.total_price }}</h5>
+                </div>
+            {% endif %}
             <div class="col-md-1 col-lg-1 col-xl-1 text-end">
                 <a href="#!" class="text-danger"><i class="fas fa-trash fa-lg"></i></a>
             </div>
