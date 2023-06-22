@@ -73,7 +73,7 @@ class OrderView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request, format=None):
         orders = Order.objects.all()
-        serialized_orders = ProductSerializer(orders, many=True)
+        serialized_orders = OrderSerializer(orders, many=True)
         return Response(orders.data)
 
 

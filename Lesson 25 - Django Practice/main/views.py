@@ -1,11 +1,14 @@
+import asyncio
+
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from .models import Order, OrderItems
 from .forms import NewUserForm
+from api.serializers import OrderSerializer
+from telegram_bot.telegram_bot import send_order_message_to_telegram
 from products.models import Product
-
 
 def main(request):
     products = Product.objects.filter(show_on_main_page=True)
@@ -71,6 +74,9 @@ def checkout_proceed(request):
             order_item.price = item["price"]
             order_item.quantity = item["quantity"]
             order_item.save()
+
+        order_serialized = OrderSerializer(order)
+        send_order_message_to_telegram(order_serialized.data)
     return HttpResponseRedirect("/")
 
 

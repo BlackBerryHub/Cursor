@@ -103,6 +103,11 @@ REST_FRAMEWORK = {
     ]
 }
 
+TELEGRAM = {
+    'bot_token': '5971390577:AAFl7_YUAImllZmV4nDVRUyiccsi5BPw7fI',
+    'chat_id': -1001909848409
+}
+
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
