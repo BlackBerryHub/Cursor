@@ -53,6 +53,7 @@ def checkout(request):
 
 def checkout_proceed(request):
     if request.method == "POST":
+        items_list = []
         order = Order()
         order.first_name = request.POST.get("first_name")
         order.last_name = request.POST.get("last_name")
@@ -75,8 +76,15 @@ def checkout_proceed(request):
             order_item.quantity = item["quantity"]
             order_item.save()
 
-        order_serialized = OrderSerializer(order)
-        send_order_message_to_telegram(order_serialized.data)
+            items_list.append(f"\n    • ID: {order_item.product_id}, "
+                              f"Quantity: {order_item.quantity}, "
+                              f"Price: {order_item.price}")
+
+        telegram_message = f"The customer {order.first_name} {order.last_name} " \
+                           f"({order.address}, {order.city}, {order.country}) has just purchased the next items: " \
+                           f"{''.join(items_list)}"
+
+        send_order_message_to_telegram(telegram_message)
     return HttpResponseRedirect("/")
 
 
